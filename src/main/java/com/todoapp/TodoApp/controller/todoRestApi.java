@@ -4,8 +4,10 @@ import java.util.List;
 
 import com.todoapp.TodoApp.Repository.TodoItemRepository;
 import com.todoapp.TodoApp.model.TodoItem;
+
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/todos")
 public class todoRestApi {
@@ -45,8 +47,21 @@ public class todoRestApi {
         return null;
     }
 
+    @PutMapping("/{todoId}/complete")
+    public TodoItem updateTodoCompleteStatus(@PathVariable long todoId) {
+        if (todoItemRepository.existsById(todoId)) {
+            TodoItem existingTodo = todoItemRepository.findById(todoId).orElse(null);
+            if (existingTodo != null) {
+                existingTodo.setCompleted(!existingTodo.isCompleted()); // Toggle the completed value
+                return todoItemRepository.save(existingTodo);
+            }
+        }
+        return null;
+    }
+
     @DeleteMapping("/{todoId}")
     public void deleteTodo(@PathVariable long todoId) {
         todoItemRepository.deleteById(todoId);
     }
+
 }
